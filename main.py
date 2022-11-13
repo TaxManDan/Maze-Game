@@ -1,6 +1,7 @@
 import arcade
 import arcade.gui
 
+PLAYER_MOVEMENT_SPEED = 5
 
 class HomeView(arcade.View):
 
@@ -10,7 +11,7 @@ class HomeView(arcade.View):
         # Create and enable the UIManager
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
-        self.difficulty = "Normal"
+        self.difficulty = "Easy"
 
         arcade.set_background_color(arcade.color.LIGHT_CORNFLOWER_BLUE)
 
@@ -67,8 +68,9 @@ class HomeView(arcade.View):
             width=375,
             height=250,
             message_text=(
-                "This is a Help Message box for giving users in game hints "
-                "click ok to close."
+                "This is a simple maze game where you play as the orange circle"
+                "and you have to get from the red square to the green square to win."
+                "If you want to go back and change your difficulty just press 'B' at anytime"
             ),
             callback=self.on_message_box_close,
             buttons=["Ok", "Cancel"]
@@ -103,10 +105,8 @@ class HomeView(arcade.View):
         difficulty = self.difficulty
         if difficulty == "Easy":
             game_view = EasyView()
-        elif difficulty == "Normal":
-            game_view = NormalView()
-        elif difficulty == "Hard":
-            game_view = HardView()
+        else:
+            game_view = HomeView()
         self.window.show_view(game_view)
 
     def on_draw(self):
@@ -119,64 +119,73 @@ class EasyView(arcade.View):
         super().__init__()
         # set a background color
         arcade.set_background_color(arcade.color.BLACK)
-        self.wall_list = None
+        # self.wall_list = None
+        self.manager = arcade.gui.UIManager()
+        self.manager.enable()
         self.scene = None
-        self.player_list = None
         self.player_sprite = None
+        self.finish_sprite = None
         self.physics_engine = None
         # --- Required for all code that uses UI element,
         # a UIManager to handle the UI.
-        self.manager = arcade.gui.UIManager()
-        self.manager.enable()
         self.setup()
         self.on_draw()
 
-
-        arcade.finish_render()
-
     def setup(self):
+        """Set up the game here. Call this function to restart the game."""
+
+        # Initialize Scene
         self.scene = arcade.Scene()
 
-        # Create the Sprite lists
-        self.player_list = arcade.SpriteList()
-        self.wall_list = arcade.SpriteList(use_spatial_hash=True)
-
         # Set up the player, specifically placing it at these coordinates.
-        self.player_sprite = arcade.Sprite("images/circle.png", .0625)
+        image_source = "images/circle.png"
+        self.player_sprite = arcade.Sprite(image_source, 0.06, hit_box_algorithm="Simple")
         self.player_sprite.center_x = 125
         self.player_sprite.center_y = 125
+        self.finish_sprite = arcade.Sprite("images/finish.png",1, center_x=1155, center_y=595)
+        self.scene.add_sprite("Player", self.finish_sprite)
         self.scene.add_sprite("Player", self.player_sprite)
 
-        wall = arcade.Sprite("images/rectangle.png", 1)
-        wall.center_x = 640
-        wall.center_y = 50
+        # Create the Walls of the maze
+        wall = arcade.Sprite("images/rectangle.png", 1, center_x=640, center_y=50)
+        self.scene.add_sprite("Walls", wall)
+        wall = arcade.Sprite("images/rectangle.png", 1, center_x=640, center_y=670)
+        self.scene.add_sprite("Walls", wall)
+        wall = arcade.Sprite("images/wall1.png", 1, center_x=50, center_y=360)
+        self.scene.add_sprite("Walls", wall)
+        wall = arcade.Sprite("images/wall1.png", 1, center_x=1230, center_y=360)
+        self.scene.add_sprite("Walls", wall)
+        wall = arcade.Sprite("images/wall1.png", 1, image_width=50, image_height=370, center_x=175, center_y=285)
+        self.scene.add_sprite("Walls", wall)
+        wall = arcade.Sprite("images/wall1.png", 1, image_width=50, image_height=270, center_x=565, center_y=395)
+        self.scene.add_sprite("Walls", wall)
+        wall = arcade.Sprite("images/wall1.png", 1, image_width=50, image_height=270, center_x=875, center_y=485)
+        self.scene.add_sprite("Walls", wall)
+        wall = arcade.Sprite("images/wall1.png", 1, image_width=50, image_height=370, center_x=1105, center_y=435)
+        self.scene.add_sprite("Walls", wall)
+        wall = arcade.Sprite("images/wall1.png", 1, image_width=50, image_height=270, center_x=775, center_y=325)
+        self.scene.add_sprite("Walls", wall)
+        wall = arcade.Sprite("images/wall1.png", 1, image_width=50, image_height=270, center_x=1005, center_y=325)
+        self.scene.add_sprite("Walls", wall)
+        wall = arcade.Sprite("images/wall1.png", 1, image_width=50, image_height=270, center_x=675, center_y=285)
+        self.scene.add_sprite("Walls", wall)
+        wall = arcade.Sprite("images/wall1.png", 1, image_width=50, image_height=270, center_x=475, center_y=385)
+        self.scene.add_sprite("Walls", wall)
+        wall = arcade.Sprite("images/wall1.png", 1, image_width=50, image_height=270, center_x=375, center_y=235)
+        self.scene.add_sprite("Walls", wall)
+        wall = arcade.Sprite("images/wall1.png", 1, image_width=50, image_height=270, center_x=275, center_y=385)
+        self.scene.add_sprite("Walls", wall)
+        wall = arcade.Sprite("images/rectangle.png", 1, image_width=230, image_height=50, center_x=565, center_y=395)
+        self.scene.add_sprite("Walls", wall)
+        wall = arcade.Sprite("images/rectangle.png", 1, image_width=530, image_height=50, center_x=915, center_y=175)
+        self.scene.add_sprite("Walls", wall)
+        wall = arcade.Sprite("images/rectangle.png", 1, image_width=530, image_height=50, center_x=415, center_y=545)
         self.scene.add_sprite("Walls", wall)
 
+        # Create the 'physics engine'
         self.physics_engine = arcade.PhysicsEngineSimple(
             self.player_sprite, self.scene.get_sprite_list("Walls")
         )
-
-
-    def draw_maze(self):
-        walls = arcade.color.BABY_BLUE
-        arcade.draw_rectangle_filled(50, 360, 100, 720, walls)
-        arcade.draw_rectangle_filled(640, 50, 1280, 100, walls)
-        arcade.draw_rectangle_filled(640, 670, 1280, 100, walls)
-        arcade.draw_rectangle_filled(1230, 360, 100, 720, walls)
-        arcade.draw_rectangle_filled(125, 125, 50, 50, arcade.color.RUBY_RED)
-        arcade.draw_rectangle_filled(1155, 595, 50, 50, arcade.color.GO_GREEN)
-        arcade.draw_rectangle_filled(175, 285, 50, 370, walls)
-        arcade.draw_rectangle_filled(565, 395, 230, 50, walls)
-        arcade.draw_rectangle_filled(875, 485, 50, 270, walls)
-        arcade.draw_rectangle_filled(1105, 435, 50, 370, walls)
-        arcade.draw_rectangle_filled(915, 175, 530, 50, walls)
-        arcade.draw_rectangle_filled(415, 545, 530, 50, walls)
-        arcade.draw_rectangle_filled(775, 325, 50, 270, walls)
-        arcade.draw_rectangle_filled(1005, 325, 50, 270, walls)
-        arcade.draw_rectangle_filled(675, 285, 50, 270, walls)
-        arcade.draw_rectangle_filled(475, 385, 50, 270, walls)
-        arcade.draw_rectangle_filled(375, 235, 50, 270, walls)
-        arcade.draw_rectangle_filled(275, 385, 50, 270, walls)
 
     def on_draw(self):
         """Render the screen."""
@@ -185,22 +194,25 @@ class EasyView(arcade.View):
         self.clear()
 
         # Draw our sprites
-        #self.draw_maze()
+        arcade.draw_rectangle_filled(125, 125, 50, 50, arcade.color.RUBY_RED)
+        arcade.draw_rectangle_filled(1155, 595, 50, 50, arcade.color.GO_GREEN)
         self.scene.draw()
-        self.wall_list.draw()
-        self.player_list.draw()
+
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed."""
 
         if key == arcade.key.UP or key == arcade.key.W:
-            self.player_sprite.change_y = 5
+            self.player_sprite.change_y = PLAYER_MOVEMENT_SPEED
         elif key == arcade.key.DOWN or key == arcade.key.S:
-            self.player_sprite.change_y = -5
+            self.player_sprite.change_y = -PLAYER_MOVEMENT_SPEED
         elif key == arcade.key.LEFT or key == arcade.key.A:
-            self.player_sprite.change_x = -5
+            self.player_sprite.change_x = -PLAYER_MOVEMENT_SPEED
         elif key == arcade.key.RIGHT or key == arcade.key.D:
-            self.player_sprite.change_x = 5
+            self.player_sprite.change_x = PLAYER_MOVEMENT_SPEED
+        elif key == arcade.key.B:
+            game_view = HomeView()
+            self.window.show_view(game_view)
 
     def on_key_release(self, key, modifiers):
         """Called when the user releases a key."""
@@ -219,42 +231,45 @@ class EasyView(arcade.View):
 
         # Move the player with the physics engine
         self.physics_engine.update()
+        colliding = arcade.check_for_collision(self.player_sprite, self.finish_sprite)
+        if colliding:
+            game_view = EndView()
+            self.window.show_view(game_view)
 
 
-class NormalView(arcade.View):
+class EndView(arcade.View):
     def __init__(self):
         super().__init__()
-        # set a background color
-        arcade.set_background_color(arcade.color.CITRON)
-        self.clear()
-        # --- Required for all code that uses UI element,
-        # a UIManager to handle the UI.
+
+        # Create and enable the UIManager
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
 
-        # set a random number between 1-20
+        arcade.set_background_color(arcade.color.LIGHT_CORNFLOWER_BLUE)
 
-        # --- Finish drawing ---
-        arcade.finish_render()
+        play_button = arcade.gui.UIFlatButton(text="MAIN MENU", width=200)
 
+        button_box = arcade.gui.UIBoxLayout()  # Create a box group to align the 'open' button in the center
+        button_box.add(play_button)
+        play_button.on_click = self.on_click_play
+        self.manager.add(
+            arcade.gui.UIAnchorWidget(
+                anchor_x="center",
+                align_x=0,
+                anchor_y="center",
+                align_y=0,
 
-class HardView(arcade.View):
-    def __init__(self):
-        super().__init__()
-        arcade.set_background_color(arcade.color.BLACK)
+                child=play_button
+            )
+        )
+
+    def on_click_play(self, event):
+        game_view = HomeView()
+        self.window.show_view(game_view)
+
+    def on_draw(self):
         self.clear()
-        self.manager = arcade.gui.UIManager()
-        self.manager.enable()
-        self.draw_maze()
-
-        arcade.finish_render()
-
-    def draw_maze(self):
-        arcade.draw_rectangle_filled(center_x=20, center_y=360, width=40, height=720, color=arcade.color.BABY_BLUE)
-        arcade.draw_rectangle_filled(640, 20, 1280, 40, arcade.color.BABY_BLUE)
-        arcade.draw_rectangle_filled(640, 700, 1280, 40, arcade.color.BABY_BLUE)
-        arcade.draw_rectangle_filled(1260, 360, 40, 720, arcade.color.BABY_BLUE)
-        arcade.draw_rectangle_filled(60, 60, 40, 40, arcade.color.RUBY_RED)
+        self.manager.draw()
 
 
 SCREEN_WIDTH = 1280
@@ -266,7 +281,7 @@ def main():
     """ Main function """
 
     window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
-    start_view = EasyView()
+    start_view = HomeView()
     window.show_view(start_view)
     arcade.run()
 
