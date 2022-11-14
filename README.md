@@ -14,7 +14,7 @@ This program was made in python using the arcade library.
 
 # Useful Websites
 
-{Make a list of websites that you found helpful in this project}
+
 * [Python Arcade Library](https://api.arcade.academy/en/stable/index.html)
 * [Geeks For Geeks](https://www.geeksforgeeks.org/arcade-library-in-python/?ref=rp)
 
