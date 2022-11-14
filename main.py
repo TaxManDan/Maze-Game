@@ -1,8 +1,10 @@
 import arcade
 import arcade.gui
 
+# Set player movement speed
 PLAYER_MOVEMENT_SPEED = 5
 
+# Create the home view for the game
 class HomeView(arcade.View):
 
     def __init__(self):
@@ -15,6 +17,7 @@ class HomeView(arcade.View):
 
         arcade.set_background_color(arcade.color.LIGHT_CORNFLOWER_BLUE)
 
+        # Create all the buttons for the Game
         help_button = arcade.gui.UIFlatButton(text="HELP", width=200)
         difficulty_button = arcade.gui.UIFlatButton(text="DIFFICULTY", width=200)
         play_button = arcade.gui.UIFlatButton(text="PLAY", width=200)
@@ -142,6 +145,7 @@ class EasyView(arcade.View):
         self.player_sprite = arcade.Sprite(image_source, 0.06, hit_box_algorithm="Simple")
         self.player_sprite.center_x = 125
         self.player_sprite.center_y = 125
+        # Set up the finish at the end.
         self.finish_sprite = arcade.Sprite("images/finish.png",1, center_x=1155, center_y=595)
         self.scene.add_sprite("Player", self.finish_sprite)
         self.scene.add_sprite("Player", self.player_sprite)
@@ -182,7 +186,7 @@ class EasyView(arcade.View):
         wall = arcade.Sprite("images/rectangle.png", 1, image_width=530, image_height=50, center_x=415, center_y=545)
         self.scene.add_sprite("Walls", wall)
 
-        # Create the 'physics engine'
+        # Create the physics engine and add the walls as barriers
         self.physics_engine = arcade.PhysicsEngineSimple(
             self.player_sprite, self.scene.get_sprite_list("Walls")
         )
@@ -193,9 +197,8 @@ class EasyView(arcade.View):
         # Clear the screen to the background color
         self.clear()
 
-        # Draw our sprites
+        # Draw the start square and the full scene.
         arcade.draw_rectangle_filled(125, 125, 50, 50, arcade.color.RUBY_RED)
-        arcade.draw_rectangle_filled(1155, 595, 50, 50, arcade.color.GO_GREEN)
         self.scene.draw()
 
 
@@ -210,6 +213,7 @@ class EasyView(arcade.View):
             self.player_sprite.change_x = -PLAYER_MOVEMENT_SPEED
         elif key == arcade.key.RIGHT or key == arcade.key.D:
             self.player_sprite.change_x = PLAYER_MOVEMENT_SPEED
+        # Added a keybind to the B button to go back to home
         elif key == arcade.key.B:
             game_view = HomeView()
             self.window.show_view(game_view)
@@ -231,12 +235,14 @@ class EasyView(arcade.View):
 
         # Move the player with the physics engine
         self.physics_engine.update()
+        # Check if the user made it to the finish
         colliding = arcade.check_for_collision(self.player_sprite, self.finish_sprite)
         if colliding:
             game_view = EndView()
             self.window.show_view(game_view)
 
 
+# View for when the user wins
 class EndView(arcade.View):
     def __init__(self):
         super().__init__()
@@ -247,6 +253,7 @@ class EndView(arcade.View):
 
         arcade.set_background_color(arcade.color.LIGHT_CORNFLOWER_BLUE)
 
+        # Create button to go back to the Home screen
         play_button = arcade.gui.UIFlatButton(text="MAIN MENU", width=200)
 
         button_box = arcade.gui.UIBoxLayout()  # Create a box group to align the 'open' button in the center
@@ -277,6 +284,7 @@ SCREEN_HEIGHT = 720
 SCREEN_TITLE = "Danny's Maze Game"
 
 
+# Bring all the views together in the game.
 def main():
     """ Main function """
 
