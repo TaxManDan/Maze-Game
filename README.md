@@ -2,7 +2,7 @@
 
 This is a simple maze game where the user controls a circle and tries to make it to the green square at the end.
 
-{Describe your purpose for writing this software.}
+This software was made to combine my abilities of making gui and logic that controls that gui into one tangible project.
 
 [Software Demo Video](http://youtube.link.goes.here)
 
@@ -10,17 +10,16 @@ This is a simple maze game where the user controls a circle and tries to make it
 
 I used pycharm to create this software along with photopea for making maze designs.
 
-{Describe the programming language that you used and any libraries.}
+This program was made in python using the arcade library.
 
 # Useful Websites
 
 {Make a list of websites that you found helpful in this project}
-* [Web Site Name](http://url.link.goes.here)
-* [Web Site Name](http://url.link.goes.here)
+* [Python Arcade Library](https://api.arcade.academy/en/stable/index.html)
+* [Geeks For Geeks](https://www.geeksforgeeks.org/arcade-library-in-python/?ref=rp)
 
 # Future Work
 
-{Make a list of things that you need to fix, improve, and add in the future.}
-* Item 1
-* Item 2
-* Item 3
+* Create the Normal and Hard difficulties.
+* Add a way to keep track of highscore locally.
+* Add another mode where an enemy is chasing after you.
